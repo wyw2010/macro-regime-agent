@@ -192,13 +192,20 @@ def _compute_corr_single(raw_series: dict, sp500_label: str, lookback_days: int 
         series_filtered = [(d, v) for d, v in series if d >= cutoff] if lookback_days else series
         series_by_date = {d: v for d, v in series_filtered}
 
-        # For indicators with fewer observations (monthly like CPI, UNRATE),
-        # forward-fill to daily dates
-        if len(series_filtered) < 50:
-            sorted_dates = sorted(series_by_date.keys())
+        # Detect if this is a low-frequency series (monthly/quarterly) by checking
+        # average gap between observations. If avg gap > 7 days, forward-fill.
+        sorted_obs_dates = sorted(series_by_date.keys())
+        if len(sorted_obs_dates) >= 2:
+            first = datetime.strptime(sorted_obs_dates[0], "%Y-%m-%d")
+            last = datetime.strptime(sorted_obs_dates[-1], "%Y-%m-%d")
+            avg_gap = (last - first).days / max(len(sorted_obs_dates) - 1, 1)
+        else:
+            avg_gap = 999
+
+        if avg_gap > 7:  # monthly, quarterly, etc. — forward-fill to daily
             filled = {}
             last_val = None
-            all_dates = sorted(set(sp500_dates) | set(sorted_dates))
+            all_dates = sorted(set(sp500_dates) | set(sorted_obs_dates))
             for d in all_dates:
                 if d in series_by_date:
                     last_val = series_by_date[d]
@@ -571,6 +578,10 @@ def build_email_html(analysis: dict, indicators: dict, correlations: dict) -> st
     </body>
     </html>
     """
+    # Minify HTML to stay under Gmail's ~102KB clipping threshold
+    import re
+    html = re.sub(r'>\s+<', '><', html)  # remove whitespace between tags
+    html = re.sub(r'\s{2,}', ' ', html)  # collapse multiple spaces
     return html
 
 
