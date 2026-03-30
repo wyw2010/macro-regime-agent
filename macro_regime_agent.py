@@ -611,22 +611,26 @@ def send_email(html: str, subject: str):
     smtp_port = int(os.getenv("SMTP_PORT", "587"))
     email_from = os.getenv("EMAIL_FROM")
     email_password = os.getenv("EMAIL_PASSWORD")
-    email_to = os.getenv("EMAIL_TO")
+    email_to_raw = os.getenv("EMAIL_TO")
 
-    if not all([email_from, email_password, email_to]):
+    if not all([email_from, email_password, email_to_raw]):
         print("ERROR: EMAIL_FROM, EMAIL_PASSWORD, and EMAIL_TO must be set in .env")
         sys.exit(1)
+
+    # Support comma-separated list of recipients
+    recipients = [addr.strip() for addr in email_to_raw.split(",") if addr.strip()]
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = email_from
-    msg["To"] = email_to
+    msg["To"] = ", ".join(recipients)
     msg.attach(MIMEText(html, "html"))
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
         server.starttls()
         server.login(email_from, email_password)
-        server.sendmail(email_from, email_to, msg.as_string())
+        server.sendmail(email_from, recipients, msg.as_string())
+    print(f"  Sent to {len(recipients)} recipient(s): {', '.join(recipients)}")
 
 
 # ---------------------------------------------------------------------------
