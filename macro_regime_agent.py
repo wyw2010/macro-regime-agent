@@ -624,20 +624,40 @@ def _build_prediction_box(prediction: dict) -> str:
     </div>"""
 
 
+def _load_subscribers() -> list[str]:
+    """Load subscriber emails from subscribers.json if it exists."""
+    subscribers_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "subscribers.json")
+    if not os.path.exists(subscribers_path):
+        return []
+    try:
+        with open(subscribers_path) as f:
+            data = json.load(f)
+        return [e.strip() for e in data.get("subscribers", []) if e.strip()]
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"  WARNING: Could not read subscribers.json: {e}")
+        return []
+
+
 def send_email(html: str, subject: str):
     """Send the HTML email via SMTP."""
     smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     smtp_port = int(os.getenv("SMTP_PORT", "587"))
     email_from = os.getenv("EMAIL_FROM")
     email_password = os.getenv("EMAIL_PASSWORD")
-    email_to_raw = os.getenv("EMAIL_TO")
+    email_to_raw = os.getenv("EMAIL_TO", "")
 
-    if not all([email_from, email_password, email_to_raw]):
-        print("ERROR: EMAIL_FROM, EMAIL_PASSWORD, and EMAIL_TO must be set in .env")
+    if not all([email_from, email_password]):
+        print("ERROR: EMAIL_FROM and EMAIL_PASSWORD must be set in .env")
         sys.exit(1)
 
-    # Support comma-separated list of recipients
-    recipients = [addr.strip() for addr in email_to_raw.split(",") if addr.strip()]
+    # Merge EMAIL_TO env var with subscribers.json (deduplicated)
+    env_recipients = [addr.strip() for addr in email_to_raw.split(",") if addr.strip()]
+    file_recipients = _load_subscribers()
+    recipients = list(dict.fromkeys(env_recipients + file_recipients))  # dedup, preserving order
+
+    if not recipients:
+        print("ERROR: No recipients found in EMAIL_TO or subscribers.json")
+        sys.exit(1)
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject

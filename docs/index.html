@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Regime Digest - Subscribe</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 520px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #f8fafc;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        .features {
+            margin-bottom: 32px;
+        }
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .feature-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .feature-text {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+        .feature-text strong {
+            color: #f1f5f9;
+        }
+        .form-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        input[type="email"] {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            background: #1e293b;
+            color: #f8fafc;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="email"]:focus {
+            border-color: #3b82f6;
+        }
+        input[type="email"]::placeholder {
+            color: #64748b;
+        }
+        button {
+            padding: 14px 24px;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 700;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        button:hover { background: #2563eb; }
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            display: none;
+            margin-bottom: 16px;
+        }
+        .message.success {
+            display: block;
+            background: #064e3b;
+            color: #6ee7b7;
+            border: 1px solid #065f46;
+        }
+        .message.error {
+            display: block;
+            background: #7f1d1d;
+            color: #fca5a5;
+            border: 1px solid #991b1b;
+        }
+        .footer {
+            margin-top: 40px;
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .footer a {
+            color: #64748b;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .badge-free {
+            background: #064e3b;
+            color: #6ee7b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="badge badge-free">Free Daily Newsletter</span>
+        <h1>Macro Regime Digest</h1>
+        <p class="subtitle">
+            AI-powered daily macro regime analysis for systematic factor investors.
+            Delivered to your inbox every weekday at 9 AM ET.
+        </p>
+
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">&#9650;</span>
+                <span class="feature-text"><strong>Regime Classification</strong> &mdash; Reflation, Goldilocks, Stagflation, or Deflation with confidence level</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">&#9670;</span>
+                <span class="feature-text"><strong>Factor Scorecard</strong> &mdash; Momentum, Growth, and Value rated as Tailwind, Neutral, or Headwind</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">&#9660;</span>
+                <span class="feature-text"><strong>18 Macro Signals</strong> &mdash; Rates, inflation, credit, equity, and commodities with 1D to 1Y changes</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">&#9679;</span>
+                <span class="feature-text"><strong>Signal Ranking</strong> &mdash; Correlation-weighted indicators ranked by S&amp;P 500 predictive power</span>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="signup-form" action="https://formspree.io/f/xpwzgkby" method="POST">
+            <div class="form-group">
+                <input type="email" name="email" id="email" placeholder="your@email.com" required>
+                <button type="submit" id="submit-btn">Subscribe</button>
+            </div>
+        </form>
+
+        <p class="footer">
+            Agent created by Will Wu (willwu@stern.nyu.edu)<br>
+            Data from FRED &middot; Analysis by Claude &middot; <a href="https://github.com/wyw2010/macro-regime-agent">Source</a>
+        </p>
+    </div>
+
+    <script>
+        const form = document.getElementById('signup-form');
+        const msg = document.getElementById('message');
+        const btn = document.getElementById('submit-btn');
+        const emailInput = document.getElementById('email');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.textContent = 'Subscribing...';
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            try {
+                const resp = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' },
+                    body: new FormData(form)
+                });
+
+                if (resp.ok) {
+                    msg.className = 'message success';
+                    msg.textContent = "You're subscribed! You'll receive your first digest on the next weekday at 9 AM ET.";
+                    msg.style.display = 'block';
+                    emailInput.value = '';
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (err) {
+                msg.className = 'message error';
+                msg.textContent = 'Something went wrong. Please email willwu7370@gmail.com to subscribe manually.';
+                msg.style.display = 'block';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Subscribe';
+        });
+    </script>
+</body>
+</html>

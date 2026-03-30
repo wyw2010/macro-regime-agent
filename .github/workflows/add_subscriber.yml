@@ -1,0 +1,38 @@
+name: "Add Subscriber"
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email address to add'
+        required: true
+        type: string
+
+jobs:
+  add-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add email to subscribers.json
+        run: |
+          EMAIL="${{ github.event.inputs.email }}"
+          # Check if already subscribed
+          if jq -e ".subscribers | index(\"$EMAIL\")" subscribers.json > /dev/null 2>&1; then
+            echo "$EMAIL is already subscribed."
+            exit 0
+          fi
+          # Add email
+          jq ".subscribers += [\"$EMAIL\"]" subscribers.json > tmp.json && mv tmp.json subscribers.json
+          echo "Added $EMAIL to subscribers.json"
+          cat subscribers.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add subscribers.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Add subscriber: ${{ github.event.inputs.email }}"
+          git push
