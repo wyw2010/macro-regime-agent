@@ -413,9 +413,9 @@ def build_email_html(analysis: dict, indicators: dict, correlations: dict) -> st
         rationale = info.get("rationale", "")
         factor_rows += f"""
         <tr>
-            <td style="padding:8px 12px;font-weight:600;text-transform:capitalize;">{factor}</td>
-            <td style="padding:8px 12px;color:{color};font-weight:700;">{rating}</td>
-            <td style="padding:8px 12px;color:#374151;">{rationale}</td>
+            <td style="padding:10px 12px;font-weight:600;text-transform:capitalize;">{factor}</td>
+            <td style="padding:10px 12px;color:{color};font-weight:700;">{rating}</td>
+            <td style="padding:10px 12px;color:#374151;line-height:1.4;">{rationale}</td>
         </tr>"""
 
     # Indicator rows
@@ -494,63 +494,70 @@ def build_email_html(analysis: dict, indicators: dict, correlations: dict) -> st
 
     html = f"""
     <html>
-    <body style="font-family:'Times New Roman',Times,serif;max-width:720px;margin:0 auto;color:#1f2937;padding:20px;font-size:18px;">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family:'Times New Roman',Times,serif;max-width:720px;margin:0 auto;color:#1f2937;padding:16px;font-size:18px;line-height:1.5;">
 
     <h1 style="font-size:28px;margin-bottom:4px;">Macro Regime Daily Digest</h1>
-    <p style="color:#6b7280;margin-top:0;font-size:15px;">{date_str}</p>
-    <p style="color:#9ca3af;margin-top:-8px;font-size:12px;">Agent created by Will Wu (willwu@stern.nyu.edu)</p>
+    <p style="color:#6b7280;margin-top:0;font-size:16px;">{date_str}</p>
+    <p style="color:#9ca3af;margin-top:-8px;font-size:13px;">Agent created by Will Wu (willwu@stern.nyu.edu)</p>
 
     <div style="background:#f0f9ff;border-left:4px solid #3b82f6;padding:16px;margin:20px 0;border-radius:4px;">
-        <h2 style="margin:0 0 8px 0;font-size:18px;">
+        <h2 style="margin:0 0 8px 0;font-size:20px;">
             Regime: {regime}
-            <span style="font-weight:400;color:#6b7280;font-size:15px;">({confidence} confidence)</span>
+            <span style="font-weight:400;color:#6b7280;font-size:16px;">({confidence} confidence)</span>
         </h2>
-        <p style="margin:0;color:#374151;">{summary}</p>
+        <p style="margin:0;color:#374151;font-size:17px;line-height:1.5;">{summary}</p>
     </div>
 
     <h3 style="font-size:21px;">Factor Scorecard</h3>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:16px;">
         <tr style="background:#f3f4f6;">
-            <th style="padding:8px 12px;text-align:left;">Factor</th>
-            <th style="padding:8px 12px;text-align:left;">Rating</th>
-            <th style="padding:8px 12px;text-align:left;">Rationale</th>
+            <th style="padding:10px 12px;text-align:left;">Factor</th>
+            <th style="padding:10px 12px;text-align:left;">Rating</th>
+            <th style="padding:10px 12px;text-align:left;">Rationale</th>
         </tr>
         {factor_rows}
     </table>
 
     <h3 style="font-size:21px;">Transition Signals</h3>
-    <p style="color:#374151;background:#fffbeb;padding:12px;border-radius:4px;border-left:4px solid #f59e0b;">
+    <p style="color:#374151;background:#fffbeb;padding:14px;border-radius:4px;border-left:4px solid #f59e0b;font-size:16px;line-height:1.5;">
         {transitions}
     </p>
 
     <h3 style="font-size:21px;">Key Indicators</h3>
-    <table style="width:100%;border-collapse:collapse;font-size:15px;margin-bottom:20px;">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:20px;">
+    <table style="min-width:600px;width:100%;border-collapse:collapse;font-size:15px;">
         <tr style="background:#f3f4f6;">
-            <th style="padding:6px 8px;text-align:left;">Indicator</th>
-            <th style="padding:6px 8px;text-align:right;">Current</th>
-            <th style="padding:6px 8px;text-align:right;">1D</th>
-            <th style="padding:6px 8px;text-align:right;">1W</th>
-            <th style="padding:6px 8px;text-align:right;">1M</th>
-            <th style="padding:6px 8px;text-align:right;">3M</th>
-            <th style="padding:6px 8px;text-align:right;">1Y</th>
+            <th style="padding:8px 10px;text-align:left;white-space:nowrap;">Indicator</th>
+            <th style="padding:8px 10px;text-align:right;">Current</th>
+            <th style="padding:8px 10px;text-align:right;">1D</th>
+            <th style="padding:8px 10px;text-align:right;">1W</th>
+            <th style="padding:8px 10px;text-align:right;">1M</th>
+            <th style="padding:8px 10px;text-align:right;">3M</th>
+            <th style="padding:8px 10px;text-align:right;">1Y</th>
         </tr>
         {indicator_rows}
     </table>
+    </div>
 
     <h3 style="font-size:21px;">Signal Ranking</h3>
-    <p style="color:#6b7280;font-size:13px;margin-bottom:8px;">Weekly correlation with S&P 500 returns. Ranked by trailing 1Y; all-time shown for context.</p>
-    <table style="width:100%;border-collapse:collapse;font-size:15px;margin-bottom:20px;">
+    <p style="color:#6b7280;font-size:14px;margin-bottom:8px;">Weekly correlation with S&P 500 returns. Ranked by trailing 1Y; all-time shown for context.</p>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:20px;">
+    <table style="min-width:550px;width:100%;border-collapse:collapse;font-size:15px;">
         <tr style="background:#f3f4f6;">
-            <th style="padding:6px 8px;text-align:center;">#</th>
-            <th style="padding:6px 8px;text-align:left;">Indicator</th>
-            <th style="padding:6px 8px;text-align:right;">1Y Corr</th>
-            <th style="padding:6px 8px;text-align:center;">Strength</th>
-            <th style="padding:6px 8px;text-align:center;font-size:12px;">n</th>
-            <th style="padding:6px 8px;text-align:right;">All-Time</th>
-            <th style="padding:6px 8px;text-align:center;font-size:12px;">n</th>
+            <th style="padding:8px 10px;text-align:center;">#</th>
+            <th style="padding:8px 10px;text-align:left;white-space:nowrap;">Indicator</th>
+            <th style="padding:8px 10px;text-align:right;">1Y Corr</th>
+            <th style="padding:8px 10px;text-align:center;">Strength</th>
+            <th style="padding:8px 10px;text-align:center;font-size:13px;">n</th>
+            <th style="padding:8px 10px;text-align:right;">All-Time</th>
+            <th style="padding:8px 10px;text-align:center;font-size:13px;">n</th>
         </tr>
         {signal_rows}
     </table>
+    </div>
 
     <h3 style="font-size:21px;">Risks & Watchlist</h3>
     <ul style="color:#374151;">{risk_items}</ul>
