@@ -360,7 +360,8 @@ def build_analysis_prompt(indicators: dict, correlations: dict) -> str:
 
 def analyze_regime(indicators: dict, correlations: dict) -> dict:
     """Call Claude API to classify regime and assess factor impacts."""
-    client = anthropic.Anthropic()
+    api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    client = anthropic.Anthropic(api_key=api_key)
     prompt = build_analysis_prompt(indicators, correlations)
 
     message = client.messages.create(
