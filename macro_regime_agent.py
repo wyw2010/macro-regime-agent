@@ -508,7 +508,7 @@ def build_email_html(analysis: dict, indicators: dict, correlations: dict) -> st
 
     <h1 style="font-size:28px;margin-bottom:4px;">Macro Regime Daily Digest</h1>
     <p style="color:#6b7280;margin-top:0;font-size:16px;">{date_str}</p>
-    <p style="color:#9ca3af;margin-top:-8px;font-size:13px;">Agent created by Will Wu (willwu@stern.nyu.edu)</p>
+    <p style="color:#9ca3af;margin-top:-8px;font-size:13px;">Agent created by Will Wu (willwu@stern.nyu.edu) &middot; <a href="https://wyw2010.github.io/macro-regime-agent/" style="color:#6b7280;">Subscribe / Share</a></p>
 
     <div style="background:#f0f9ff;border-left:4px solid #3b82f6;padding:16px;margin:20px 0;border-radius:4px;">
         <h2 style="margin:0 0 8px 0;font-size:20px;">
