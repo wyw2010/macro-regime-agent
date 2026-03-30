@@ -1,0 +1,34 @@
+name: Daily Macro Regime Digest
+
+on:
+  schedule:
+    # 9:00 AM ET = 13:00 UTC (EST) or 14:00 UTC (EDT, Mar-Nov)
+    # Using 13:00 UTC to cover EST; during EDT it'll arrive at 9 AM EDT
+    - cron: '0 13 * * 1-5'  # Weekdays at 1 PM UTC = 9 AM ET
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run macro regime agent
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python macro_regime_agent.py
