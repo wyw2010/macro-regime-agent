@@ -1,4 +1,4 @@
-name: Daily Macro Regime Digest
+name: "Daily Macro Regime Digest"
 
 on:
   schedule:
