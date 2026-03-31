@@ -192,20 +192,23 @@
             msg.className = 'message';
             msg.style.display = 'none';
 
+            // REPLACE_WITH_APPS_SCRIPT_URL — deploy your Apps Script and paste the URL here
+            const APPS_SCRIPT_URL = 'REPLACE_WITH_APPS_SCRIPT_URL';
+
             try {
-                const resp = await fetch('https://formspree.io/f/xeepkpvp', {
+                const resp = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: emailInput.value.trim() })
                 });
 
-                if (resp.ok) {
+                const data = await resp.json();
+                if (data.status === 200) {
                     msg.className = 'message success';
                     msg.textContent = "You're subscribed! You'll receive your first digest on the next weekday at 9 AM ET.";
                     msg.style.display = 'block';
                     emailInput.value = '';
                 } else {
-                    throw new Error('Submission failed');
+                    throw new Error(data.message || 'Submission failed');
                 }
             } catch (err) {
                 msg.className = 'message error';

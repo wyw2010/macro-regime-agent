@@ -22,19 +22,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Sync Formspree subscribers
-        env:
-          FORMSPREE_API_KEY: ${{ secrets.FORMSPREE_API_KEY }}
-        run: python sync_subscribers.py
-
-      - name: Commit new subscribers
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add subscribers.json
-          git diff --cached --quiet || git commit -m "Auto-sync new subscribers from Formspree"
-          git push || true
-
       - name: Run macro regime agent
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
