@@ -7,8 +7,14 @@
 
 function doPost(e) {
   try {
-    var data = JSON.parse(e.postData.contents);
-    var email = (data.email || "").trim().toLowerCase();
+    // Handle both form-encoded (from HTML form) and JSON submissions
+    var email = "";
+    if (e.parameter && e.parameter.email) {
+      email = e.parameter.email.trim().toLowerCase();
+    } else {
+      var data = JSON.parse(e.postData.contents);
+      email = (data.email || "").trim().toLowerCase();
+    }
 
     if (!email || email.indexOf("@") === -1) {
       return response_(400, "Invalid email");

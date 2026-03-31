@@ -166,7 +166,10 @@
 
         <div id="message" class="message"></div>
 
-        <form id="signup-form">
+        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+        <form id="signup-form"
+              action="https://script.google.com/macros/s/AKfycbyHTfDT0yy7bsHtcwYCw-U14atSqP1U9VgZTBJiCURkuh2q5tCQjWrPXlmIsG9cJWWf8g/exec"
+              method="POST" target="hidden_iframe">
             <div class="form-group">
                 <input type="email" name="email" id="email" placeholder="your@email.com" required>
                 <button type="submit" id="submit-btn">Subscribe</button>
@@ -185,37 +188,21 @@
         const btn = document.getElementById('submit-btn');
         const emailInput = document.getElementById('email');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        form.addEventListener('submit', function() {
             btn.disabled = true;
             btn.textContent = 'Subscribing...';
             msg.className = 'message';
             msg.style.display = 'none';
 
-            // REPLACE_WITH_APPS_SCRIPT_URL — deploy your Apps Script and paste the URL here
-            const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHTfDT0yy7bsHtcwYCw-U14atSqP1U9VgZTBJiCURkuh2q5tCQjWrPXlmIsG9cJWWf8g/exec';
-
-            try {
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ email: emailInput.value.trim() })
-                });
-
-                // Apps Script redirects make the response opaque in no-cors mode,
-                // so if fetch didn't throw, the request was sent successfully
+            // Form submits to hidden iframe, so show success after a short delay
+            setTimeout(function() {
                 msg.className = 'message success';
                 msg.textContent = "You're subscribed! You'll receive your first digest on the next weekday at 9 AM ET.";
                 msg.style.display = 'block';
                 emailInput.value = '';
-            } catch (err) {
-                msg.className = 'message error';
-                msg.textContent = 'Something went wrong. Please try again or email willwu7370@gmail.com to subscribe.';
-                msg.style.display = 'block';
-            }
-
-            btn.disabled = false;
-            btn.textContent = 'Subscribe';
+                btn.disabled = false;
+                btn.textContent = 'Subscribe';
+            }, 1500);
         });
     </script>
 </body>
