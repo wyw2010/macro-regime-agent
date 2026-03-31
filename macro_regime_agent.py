@@ -663,7 +663,8 @@ def send_email(html: str, subject: str):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = email_from
-    msg["To"] = ", ".join(recipients)
+    msg["To"] = email_from  # Send to self; all subscribers are BCC'd
+    msg["Bcc"] = ", ".join(recipients)
     msg.attach(MIMEText(html, "html"))
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
