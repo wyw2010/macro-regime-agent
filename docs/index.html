@@ -196,20 +196,18 @@
             const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHTfDT0yy7bsHtcwYCw-U14atSqP1U9VgZTBJiCURkuh2q5tCQjWrPXlmIsG9cJWWf8g/exec';
 
             try {
-                const resp = await fetch(APPS_SCRIPT_URL, {
+                await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     body: JSON.stringify({ email: emailInput.value.trim() })
                 });
 
-                const data = await resp.json();
-                if (data.status === 200) {
-                    msg.className = 'message success';
-                    msg.textContent = "You're subscribed! You'll receive your first digest on the next weekday at 9 AM ET.";
-                    msg.style.display = 'block';
-                    emailInput.value = '';
-                } else {
-                    throw new Error(data.message || 'Submission failed');
-                }
+                // Apps Script redirects make the response opaque in no-cors mode,
+                // so if fetch didn't throw, the request was sent successfully
+                msg.className = 'message success';
+                msg.textContent = "You're subscribed! You'll receive your first digest on the next weekday at 9 AM ET.";
+                msg.style.display = 'block';
+                emailInput.value = '';
             } catch (err) {
                 msg.className = 'message error';
                 msg.textContent = 'Something went wrong. Please try again or email willwu7370@gmail.com to subscribe.';
